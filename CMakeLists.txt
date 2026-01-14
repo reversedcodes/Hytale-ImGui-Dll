@@ -30,6 +30,7 @@ file(GLOB IMGUI_SOURCES CONFIGURE_DEPENDS
 add_library(HytaleImGui SHARED
   ${IMGUI_SOURCES}
 
+  src/utils/Console.cc
   src/HytaleImGui.cpp
   src/utils/Memory.cc
   src/sdk/GDI32.cc

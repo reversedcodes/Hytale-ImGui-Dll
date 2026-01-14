@@ -10,6 +10,8 @@
 #include "common/imgui/backends/imgui_impl_win32.h"
 #include "common/imgui/backends/imgui_impl_opengl3.h"
 
+#include "utils/Memory.h"
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 Hooks g_Hooks;
@@ -24,6 +26,7 @@ void Hooks::Init()
     g_Hooks.m_pWglSwapBuffersHook = std::make_unique<FuncHook>(reinterpret_cast<void *>(GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers")), Hooks::hkwglSwapBuffers);
 
     HWND hTarget = FindWindowA(nullptr, "Hytale");
+
     if (hTarget)
     {
         oWndProc = (WNDPROC)SetWindowLongPtrW(hTarget, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(Hooks::WndProc));
@@ -139,3 +142,4 @@ BOOL WINAPI Hooks::hkwglSwapBuffers(HDC hdc)
 
     return g_Hooks.m_pWglSwapBuffersHook->CallOriginal<BOOL, HDC>(hdc);
 }
+

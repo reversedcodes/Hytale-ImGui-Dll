@@ -1,11 +1,11 @@
 #include "Hooks.h"
+#include "utils/Console.h"
 
 static DWORD WINAPI init(LPVOID hModule)
 {
-
+    CreateConsole();
     Hooks::Init();
     Hooks::Enable();
-
     return 0;
 }
 

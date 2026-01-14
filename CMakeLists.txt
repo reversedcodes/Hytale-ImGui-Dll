@@ -36,6 +36,8 @@ add_library(HytaleImGui SHARED
   src/sdk/GDI32.cc
   src/Hooks.cc
 
+  src/utils/ProcessHelper.cc
+
 )
 
 target_include_directories(HytaleImGui PRIVATE ./src)

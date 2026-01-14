@@ -1,11 +1,17 @@
 #include "Hooks.h"
 #include "utils/Console.h"
+#include "utils/ProcessHelper.h"
+
+#include <iostream>
 
 static DWORD WINAPI init(LPVOID hModule)
 {
     CreateConsole();
     Hooks::Init();
     Hooks::Enable();
+
+    std::cout << "Base Address: " << ProcessHelper::getExecutableBase() << std::endl;
+
     return 0;
 }
 

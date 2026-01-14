@@ -8,7 +8,6 @@ Hytale ImGui is a C++ DLL injection project that renders an ImGui overlay inside
 * **Build System:** CMake
 
 ### Build
-
 ``` bash
 git clone https://github.com/reversedcodes/Hytale-ImGui-Dll.git
 cd Hytale-ImGui-Dll

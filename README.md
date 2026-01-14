@@ -19,9 +19,8 @@ cd build
 cmake ..
 cmake --build . --config Release
 ```
-## Injection
+## Injector
 [Cheat Engine](https://www.cheatengine.org/)
-
 
 ## License
 This project is licensed under the [Apache License 2.0](LICENSE).  

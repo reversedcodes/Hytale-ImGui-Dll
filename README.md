@@ -1,6 +1,8 @@
 # Hytale Client ImGui Modding
 Hytale ImGui is a C++ DLL injection project that renders an ImGui overlay inside the Hytale client. The source is open to modification and can be adapted freely for experimentation and debugging.
 
+<img src="./assets/preview.png" width="450">
+
 ## Tech Stack
 * **Language:** C++20
 * **UI Library:** [Dear ImGui](https://github.com/ocornut/imgui)

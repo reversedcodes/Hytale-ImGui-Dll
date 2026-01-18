@@ -1,5 +1,5 @@
-# Hytale Client ImGui Modding
-Hytale ImGui is a C++ DLL injection project that renders an ImGui overlay inside the Hytale client. The source is open to modification and can be adapted freely for experimentation and debugging.
+# Hytale Client ImGui
+Hytale Client ImGui is a C++ DLL injection project that renders an ImGui overlay inside the Hytale client. The source is open to modification and can be adapted freely for experimentation and debugging.
 
 <img src="./assets/preview.png" width="450">
 
@@ -11,7 +11,7 @@ Hytale ImGui is a C++ DLL injection project that renders an ImGui overlay inside
 
 ### Build
 ``` bash
-git clone https://github.com/reversedcodes/Hytale-ImGui-Dll.git
+git clone https://github.com/reversedcodes/Hytale-Client-ImGui.git
 cd Hytale-ImGui-Dll
 
 mkdir build

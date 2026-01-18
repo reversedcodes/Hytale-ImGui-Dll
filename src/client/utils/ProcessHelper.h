@@ -11,7 +11,5 @@ namespace ProcessHelper
     void*  getExport(void* moduleBase, const char* name);
 
     HANDLE getCurrentProcess();
-
     DWORD getCurrentPID();
-    HWND  getMainWindow(DWORD pid = 0);
 }

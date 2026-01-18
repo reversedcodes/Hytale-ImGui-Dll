@@ -1,32 +1,27 @@
-#pragma once
-
-#include <cstdint>
-#include <memory>
+#include <funchook.h>
 #include <stdexcept>
 #include <string>
-#include <Windows.h>
-#include <funchook.h>
 
-class FuncHook
+class TFuncHook
 {
 public:
     void *funcPtr = nullptr;
     void *funcReal = nullptr;
 
-    FuncHook() = default;
+    TFuncHook() = default;
 
-    FuncHook(void *func, void *hooked)
+    TFuncHook(void *func, void *hooked)
     {
         Init(func, hooked);
     }
 
-    ~FuncHook()
+    ~TFuncHook()
     {
         Restore();
     }
 
-    FuncHook(const FuncHook &) = delete;
-    FuncHook &operator=(const FuncHook &) = delete;
+    TFuncHook(const TFuncHook &) = delete;
+    TFuncHook &operator=(const TFuncHook &) = delete;
 
     void Enable()
     {
@@ -101,20 +96,3 @@ private:
     void *m_detour = nullptr;
     bool m_installed = false;
 };
-
-class Hooks
-{
-public:
-    static void Init();
-    static void Enable();
-    static void Restore();
-
-private:
-    static BOOL WINAPI hkwglSwapBuffers(HDC hdc);
-    std::unique_ptr<FuncHook> m_pWglSwapBuffersHook;
-
-    static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-    std::unique_ptr<FuncHook> m_pWndProcHook;
-};
-
-extern Hooks g_Hooks;

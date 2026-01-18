@@ -49,28 +49,4 @@ namespace ProcessHelper
     {
         return ::GetCurrentProcessId();
     }
-
-    HWND getMainWindow(DWORD pid)
-    {
-        if (pid == 0) 
-            pid = getCurrentPID();
-
-        struct Data { DWORD pid; HWND hwnd; } data{ pid, nullptr };
-
-        EnumWindows([](HWND h, LPARAM lp) -> BOOL
-        {
-            auto* d = reinterpret_cast<Data*>(lp);
-            DWORD winPid = 0;
-            GetWindowThreadProcessId(h, &winPid);
-
-            if (winPid == d->pid && IsWindowVisible(h) && GetWindow(h, GW_OWNER) == nullptr) {
-                d->hwnd = h;
-                return FALSE;
-            }
-
-            return TRUE;
-        }, (LPARAM)&data);
-
-        return data.hwnd;
-    }
 }

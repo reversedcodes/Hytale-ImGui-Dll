@@ -6,31 +6,30 @@
 #include <cmath>
 #include <iostream>
 
-#include "common/imgui/imgui.h"
-#include "common/imgui/backends/imgui_impl_win32.h"
-#include "common/imgui/backends/imgui_impl_opengl3.h"
+#include <imgui.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_win32.h>
 
+#include "utils/ProcessHelper.h"
 #include "utils/Memory.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 Hooks g_Hooks;
+static HWND g_hWnd = nullptr;
+WNDPROC oWndProc = nullptr;
+
 static bool g_ImGuiInitialized = false;
 static bool my_tool_active = true;
 static float my_color[4] = {0.45f, 0.55f, 0.60f, 1.00f};
 
-WNDPROC oWndProc = nullptr;
 
 void Hooks::Init()
 {
-    g_Hooks.m_pWglSwapBuffersHook = std::make_unique<FuncHook>(reinterpret_cast<void *>(GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglSwapBuffers")), Hooks::hkwglSwapBuffers);
-
-    HWND hTarget = FindWindowA(nullptr, "Hytale");
-
-    if (hTarget)
-    {
-        oWndProc = (WNDPROC)SetWindowLongPtrW(hTarget, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(Hooks::WndProc));
-    }
+    auto mod = ProcessHelper::getModuleBaseLoad("opengl32.dll");
+    auto target = ProcessHelper::getExport(mod, "wglSwapBuffers");
+    if (!target) return;
+    g_Hooks.m_pWglSwapBuffersHook = std::make_unique<FuncHook>(target, Hooks::hkwglSwapBuffers);
 }
 
 void Hooks::Enable()
@@ -44,12 +43,7 @@ void Hooks::Restore()
     if (g_Hooks.m_pWglSwapBuffersHook)
         g_Hooks.m_pWglSwapBuffersHook->Restore();
 
-    HWND hTarget = FindWindowA(nullptr, "Hytale");
-
-    if (hTarget && oWndProc)
-    {
-        SetWindowLongPtrW(hTarget, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(oWndProc));
-    }
+    SetWindowLongPtrW(g_hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(oWndProc));
 }
 
 LRESULT CALLBACK Hooks::WndProc(const HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -71,12 +65,15 @@ LRESULT CALLBACK Hooks::WndProc(const HWND hWnd, UINT msg, WPARAM wParam, LPARAM
         case WM_MOUSEMOVE:
             return 0;
         }
+
+        std::cout << "WndProc Message: " << msg << std::endl;
     }
 
     return CallWindowProc(oWndProc, hWnd, msg, wParam, lParam);
 }
 BOOL WINAPI Hooks::hkwglSwapBuffers(HDC hdc)
 {
+
     if (!g_ImGuiInitialized)
     {
         HWND hwnd = WindowFromDC(hdc);
@@ -87,6 +84,8 @@ BOOL WINAPI Hooks::hkwglSwapBuffers(HDC hdc)
             ImGui_ImplWin32_Init(hwnd);
             ImGui_ImplOpenGL3_Init("#version 130");
             g_ImGuiInitialized = true;
+            g_hWnd = hwnd;
+            oWndProc = (WNDPROC)SetWindowLongPtrW(g_hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(Hooks::WndProc));
         }
     }
 
@@ -99,7 +98,7 @@ BOOL WINAPI Hooks::hkwglSwapBuffers(HDC hdc)
 
     if (my_tool_active)
     {
-        ImGui::Begin("My First Tool", &my_tool_active, ImGuiWindowFlags_MenuBar);
+        ImGui::Begin("Hytale ImGui", &my_tool_active, ImGuiWindowFlags_MenuBar);
 
         if (ImGui::BeginMenuBar())
         {
@@ -127,12 +126,6 @@ BOOL WINAPI Hooks::hkwglSwapBuffers(HDC hdc)
             samples[n] = sinf(n * 0.2f + (float)ImGui::GetTime() * 1.5f);
 
         ImGui::PlotLines("Samples", samples, 100);
-
-        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Important Stuff");
-
-        ImGui::BeginChild("Scrolling", ImVec2(0, 150), true);
-        ImGui::Text("%04d: Hello, world!", 1);
-        ImGui::EndChild();
 
         ImGui::End();
     }

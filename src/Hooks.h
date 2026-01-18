@@ -4,8 +4,8 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <funchook.h>
 #include <Windows.h>
+#include <funchook.h>
 
 class FuncHook
 {

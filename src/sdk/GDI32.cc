@@ -1,4 +1,7 @@
 #include "GDI32.h"
+#include "Utils/ProcessHelper.h"
+
+#include <Windows.h>
 
 namespace GDI32
 {
@@ -16,25 +19,29 @@ namespace GDI32
     tCreateDIBSection CreateDIBSection = nullptr;
     tBitBlt BitBlt = nullptr;
 
+    static FARPROC GetProc(HMODULE mod, const char* name)
+    {
+        if (!mod) return nullptr;
+        return ::GetProcAddress(mod, name);
+    }
+
     bool Init()
     {
-        HMODULE mod = GetModuleHandleW(L"gdi32.dll");
-        
-        if (!mod) return false;
+        HMODULE mod = (HMODULE)ProcessHelper::getModuleBase("gdi32.dll");
 
-        SelectObject = (tSelectObject)GetProcAddress(mod, "SelectObject");
-        DeleteObject = (tDeleteObject)GetProcAddress(mod, "DeleteObject");
+        SelectObject = reinterpret_cast<tSelectObject>(GetProc(mod, "SelectObject"));
+        DeleteObject = reinterpret_cast<tDeleteObject>(GetProc(mod, "DeleteObject"));
 
-        SetBkMode    = (tSetBkMode)GetProcAddress(mod, "SetBkMode");
-        SetTextColor = (tSetTextColor)GetProcAddress(mod, "SetTextColor");
-        TextOutW     = (tTextOutW)GetProcAddress(mod, "TextOutW");
+        SetBkMode    = reinterpret_cast<tSetBkMode>(GetProc(mod, "SetBkMode"));
+        SetTextColor = reinterpret_cast<tSetTextColor>(GetProc(mod, "SetTextColor"));
+        TextOutW     = reinterpret_cast<tTextOutW>(GetProc(mod, "TextOutW"));
 
-        CreateFontW  = (tCreateFontW)GetProcAddress(mod, "CreateFontW");
+        CreateFontW  = reinterpret_cast<tCreateFontW>(GetProc(mod, "CreateFontW"));
 
-        CreateCompatibleDC = (tCreateCompatibleDC)GetProcAddress(mod, "CreateCompatibleDC");
-        DeleteDC           = (tDeleteDC)GetProcAddress(mod, "DeleteDC");
-        CreateDIBSection   = (tCreateDIBSection)GetProcAddress(mod, "CreateDIBSection");
-        BitBlt             = (tBitBlt)GetProcAddress(mod, "BitBlt");
+        CreateCompatibleDC = reinterpret_cast<tCreateCompatibleDC>(GetProc(mod, "CreateCompatibleDC"));
+        DeleteDC           = reinterpret_cast<tDeleteDC>(GetProc(mod, "DeleteDC"));
+        CreateDIBSection   = reinterpret_cast<tCreateDIBSection>(GetProc(mod, "CreateDIBSection"));
+        BitBlt             = reinterpret_cast<tBitBlt>(GetProc(mod, "BitBlt"));
 
         return SelectObject && DeleteObject && SetBkMode && SetTextColor && TextOutW && CreateFontW && CreateCompatibleDC && DeleteDC && CreateDIBSection && BitBlt;
     }
